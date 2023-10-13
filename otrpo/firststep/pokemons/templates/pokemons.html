@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Типо вывод покемонов</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+<form action="{% url 'pokemonsList' %}" method="post">
+  {% csrf_token %}
+  {{form}}
+  <label for="site-search">Найди покемона:</label>
+  <input type="search" id="site-search" name="searchTAG" />
+  <button type="submit"> Найти! </button>
+</form>
+
+  <h1>Покемоны</h1>
+  <table border="1" cellpadding = "5" cellspacing="5"> 
+  <td> Кличка </td>
+  <td> Ссылка </td>
+      {%for pok in response.results %}
+          <tr>
+            <td>{{pok.name}}</td>
+            <td> <a href={{pok.name}}>{{pok.url}}</a></td>
+          </tr>
+      {%endfor%}
+  </table>
+</body>
+
+</html>
