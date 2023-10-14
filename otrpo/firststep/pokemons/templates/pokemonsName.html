@@ -9,15 +9,28 @@
 </head>
 
 <body>
-  <h1>Покемон - {{pokemonName}}</h1>
+  <h1>Покемон - {{pokemonName}}
+
+    
+  </h1>
   <table border="1" cellpadding = "5" cellspacing="5"> 
   <td> Способности </td>
   <td> Ссылка </td>
+  <td> Здоровье </td>
+  <td> Атака </td>
+  <td> Защита </td>
+  <td> Специальная Атака </td>
+  <td> Специальная Защита </td>
+  <td> Скорость </td>
   <td> Фото </td>
+
       {%for pok in response.abilities %}
           <tr>
             <td>{{pok.ability.name}}</td>
             <td>{{pok.ability.url}}</td>
+      {%endfor%}
+      {%for pok in response.stats %}
+            <td>{{pok.base_stat}}</td>
       {%endfor%}
       <td> <img src = "{{ response.sprites.front_default }}" ></td>
       </tr>

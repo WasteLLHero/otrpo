@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Драка!</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <h1>Сражаются: </h1> 
+    <table border="1" cellpadding = "5" cellspacing="5">
+        <thead>
+            <tr>
+                <th> Имя </th>
+                <th> Здоровье </th>
+                <th> Атака </th>
+                <th> Защита </th>
+                <th> Специальная Атака </th>
+                <th> Специальная Защита </th>
+                <th> Скорость </th>
+                <th> Фото </td>
+
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+            {% for pok in response.first %}
+                {% if pok.name %}
+                    <td>{{ pok.name }}</td>
+                {%endif%}
+
+                {% if pok.base_stat %}
+                    <td>{{ pok.base_stat }}</td>
+                {%endif%}
+
+                {% if pok.img %}
+                <td> <img src = "{{ pok.img }}" ></td>
+                {%endif%}
+
+            {% endfor %}  
+              
+            </tr>
+            <tr>
+                {% for pok in response.second %}
+                    {% if pok.name %}
+                        <td>{{ pok.name }}</td>
+                    {%endif%}
+
+                    {% if pok.base_stat %}
+                        <td>{{ pok.base_stat }}</td>
+                    {%endif%}
+
+                    {% if pok.img %}
+                    <td> <img src = "{{ pok.img }}" ></td>
+                    {%endif%}
+                {% endfor %}  
+                  
+                </tr>
+        </tbody>
+    </table>
+    <form action="{% url 'pokemon_battle' 1 %}" method="get">
+        {% csrf_token %}
+        {{form}}
+        <label for="site-search">Введи число от 1 до 10:</label>
+        <input type="search" id="site-search" name="_fight" />
+        <button type="submit"> Найти! </button>
+        <label for="q">{{result_}}</label>     
+    </form>
+    {% for pok in response.final %}
+        {{pok}}
+    {% endfor %}  
+
+</body>
+
+</html>

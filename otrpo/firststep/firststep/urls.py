@@ -7,5 +7,5 @@ urlpatterns = [
     path('', include("pokemons.urls")),
     path('pokemons/',views.pokemonListView.as_view(), name="pokemonsList"),
     path('pokemons/<slug:slug>',views.getFromNamePokemonListView.as_view()),
-    
+    path('pokemons/battle/<slug:slug>',views.pokemonBattle.as_view() , name ='pokemon_battle'),
 ]

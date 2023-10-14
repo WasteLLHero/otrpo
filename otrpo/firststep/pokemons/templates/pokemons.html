@@ -9,7 +9,7 @@
 </head>
 
 <body>
-<form action="{% url 'pokemonsList' %}" method="post">
+<form action="{% url 'pokemonsList' %}" method="get">
   {% csrf_token %}
   {{form}}
   <label for="site-search">Найди покемона:</label>
@@ -21,10 +21,16 @@
   <table border="1" cellpadding = "5" cellspacing="5"> 
   <td> Кличка </td>
   <td> Ссылка </td>
+  <td> Выбрать </td>
       {%for pok in response.results %}
           <tr>
-            <td>{{pok.name}}</td>
-            <td> <a href={{pok.name}}>{{pok.url}}</a></td>
+            <td><a href=battle/{{pok.name}}>{{pok.name}}</td>
+            <td> <a href={{pok.name}}>{{pok.url}} </a></td>
+            <td> 
+              <form>
+                <input type="button" onclick="window.location.href = 'battle/{{pok.name}}';" value="Выбрать"/>
+              </form>
+          </td>
           </tr>
       {%endfor%}
   </table>
