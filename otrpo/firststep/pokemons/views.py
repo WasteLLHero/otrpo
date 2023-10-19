@@ -5,6 +5,47 @@ import requests
 from rest_framework import generics
 from .forms import SearchPokemons
 import random
+
+DB_HOST = "localhost"
+DB_NAME = "pokemons"
+DB_USER = "postgres"
+DB_PASS = ""
+
+import psycopg2
+import psycopg2.extras
+class DataBaseConnection:
+    def __init__(self, DB_HOST,DB_NAME, DB_USER, DB_PASS):
+        self.DB_HOST = DB_HOST
+        self.DB_NAME = DB_NAME
+        self.DB_USER = DB_USER
+        self.DB_PASS = DB_PASS
+    def createConnection(self):
+        try:
+            return psycopg2.connect(dbname=DB_NAME, user=DB_USER, password=DB_PASS, host=DB_HOST)
+        except Exception as Exp:
+            print(f"Ошибка... соединение не было установленно. {Exp}")
+    def querry(self,connect,QUERRY):
+        try:
+            with connect:
+                with connect.cursor(cursor_factory=psycopg2.extras.DictCursor) as cur:
+                    cur.execute(QUERRY)
+                    return(cur.fetchall())
+                
+        except Exception as Exp:
+            print("Запрос не выполнен! ", Exp)
+    def CloseConnection(self,connect):
+        try:
+            connect.close()
+        except Exception as Exp:
+            print("Ошибка, нельзя закрыть не открытое подключение.")
+
+    def addRez(self,connection,rez):
+        cursor = connection.cursor()
+        postgres_insert_query = f'INSERT INTO "fight_rezult" ("rezult") VALUES ({1})'
+        record_to_insert = ((rez))
+        cursor.execute(postgres_insert_query,record_to_insert)
+        connection.commit()
+
 # def dataFromApi(request):
 #         response = requests.get('https://pokeapi.co/api/v2/pokemon?limit=100000&offset=0').json()
 #         return render(request,"pokemons.html", {"response":response}) 
@@ -87,6 +128,15 @@ def fight(response,opponent_response,damage_from_user, u_stat, opp_stat):
         }
         print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!",test)
         print(f"final -> {final}")
+        con = DataBaseConnection
+        connect = DataBaseConnection.createConnection(con)
+        test2 = final
+        test2 = ",".join(test2)
+        print((test2))
+        print(final)
+        #q = con.querry(connect,connect=connect,QUERRY=f'INSERT INTO "fight_rezult" ("rezult") VALUES ({test2})')
+        q = con.addRez(con,connect,test2)
+        close = DataBaseConnection.CloseConnection(connect, connect)
         return test
 class pokemonBattle(View):
     def get(self, request, slug):
