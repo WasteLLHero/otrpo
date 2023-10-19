@@ -60,12 +60,12 @@
                 </tr>
         </tbody>
     </table>
-    <form action="{% url 'pokemon_battle' 1 %}" method="get">
+    <form>
         {% csrf_token %}
         {{form}}
         <label for="site-search">Введи число от 1 до 10:</label>
         <input type="search" id="site-search" name="_fight" />
-        <button type="submit"> Найти! </button>
+        <button type="submit" onclick="window.location.href = 'battle/{{pok.name}}/{{pok.opp}}';" >  Найти! </button>
         <label for="q">{{result_}}</label>     
     </form>
     {% for pok in response.final %}
