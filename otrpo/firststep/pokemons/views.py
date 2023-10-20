@@ -19,11 +19,12 @@ class pokemonListView(View):
         response = requests.get('https://pokeapi.co/api/v2/pokemon?limit=100000&offset=0').json()
         rez = response['results']
         opponent_pokemon = random.choice(rez)
-
+        ch_for_fast_battle = random.choice(rez)
         o_name = opponent_pokemon['name']
         print(f"res =========== {rez}")
         for pok in rez:
             pok["opp"] = o_name
+            pok["rand"] = ch_for_fast_battle
         new_result = {'results':[]}
         print(f"q = {response}")
         for pok in rez:
@@ -126,11 +127,35 @@ class pokemonBattle(View):
         test = fight(response,opponent_response,damage_from_user,response['stats'],opponent_response['stats'])
         return render(request,"battle.html", {"response":test}) 
 
-class pokemonBattleF(View):
-    def get(self, request):
-        
-        print(f"НУ ДОПУСТИМ ТУТ ЕСТЬ КАКОЙ-ТО ТЕКСТ")
-        return render(request,"battle.html", {"response":{ 'TEST':[1,2,3] }}) 
-
     
- 
+class fastbattleView(View):
+    def get(self, request):
+        start = requests.get(f'https://pokeapi.co/api/v2/pokemon?limit=100000&offset=0').json()
+        rez = start['results']
+        first_pok = random.choice(rez)
+        second_pok = random.choice(rez)
+        print(f"Первый покемон - {first_pok}")
+        first_pokemon_response = requests.get(f'https://pokeapi.co/api/v2/pokemon/{first_pok["name"]}').json()
+        second_pokemon_response = requests.get(f'https://pokeapi.co/api/v2/pokemon/{second_pok["name"]}').json()
+        first_ch = random.randint(1,10)
+        second_ch = random.randint(1,10)
+        final =[]
+        if(first_ch>second_ch):
+            final.append(f"Покемон {first_pok['name']} выиграл бой!")
+        else:
+            final.append(f"Покемон {second_pok['name']} выиграл бой!")
+
+        test = {'first': 
+                        (first_pokemon_response['forms']+first_pokemon_response['abilities']+first_pokemon_response['stats']
+                        +[{'img': first_pokemon_response['sprites']['front_default']}]), 
+                    'second': 
+                        (second_pokemon_response['forms']+second_pokemon_response['abilities']
+                        +second_pokemon_response['stats']+[{'img':second_pokemon_response['sprites']['front_default']}]),
+                    'final':final
+        }
+        print(f"Второй покемон{test['second']}")
+
+        text = ",".join(final)
+        rezult = fightRezult(rezult=text)
+        rezult.save()
+        return render(request,"fastbattle.html", {"response":test}) 
