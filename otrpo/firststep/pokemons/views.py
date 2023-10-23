@@ -4,8 +4,10 @@ from django.views import View
 import requests
 from rest_framework import generics
 from .forms import SearchPokemons
-import random
+import random 
 from .models import fightRezult
+from firststep.settings import RECIPIENTS_EMAIL, DEFAULT_FROM_EMAIL
+from django.core.mail import send_mail
 # def dataFromApi(request):
 #         response = requests.get('https://pokeapi.co/api/v2/pokemon?limit=100000&offset=0').json()
 #         return render(request,"pokemons.html", {"response":response}) 
@@ -154,8 +156,13 @@ class fastbattleView(View):
                     'final':final
         }
         print(f"Второй покемон{test['second']}")
-
+        subject = "wastell_play@mail.ru"
+        from_email ="wastellplays@mail.ru"
+        
+        
         text = ",".join(final)
         rezult = fightRezult(rezult=text)
         rezult.save()
+        send_mail(f'{subject} от {from_email}', text,
+                          DEFAULT_FROM_EMAIL, RECIPIENTS_EMAIL)
         return render(request,"fastbattle.html", {"response":test}) 

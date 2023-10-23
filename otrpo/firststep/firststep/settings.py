@@ -40,6 +40,10 @@ INSTALLED_APPS = [
     'pokemons',
     'rest_framework',
 ]
+RECIPIENTS_EMAIL = ['wastellplays@mail.ru']   # замените на свою почту
+DEFAULT_FROM_EMAIL = 'wastell_play@mail.ru'  # замените на свою почту
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
