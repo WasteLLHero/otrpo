@@ -1,5 +1,7 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
+<link rel="stylesheet" href="{% static 'stars.css'%}" type="text/css">
 
 <head>
   <meta charset="utf-8">
@@ -10,8 +12,6 @@
 
 <body>
   <h1>Покемон - {{pokemonName}}
-
-    
   </h1>
   <table border="1" cellpadding = "5" cellspacing="5"> 
   <td> Способности </td>
@@ -36,6 +36,53 @@
       </tr>
       
   </table>
+  <button type="submit" onclick="window.location.href = '';" >Сохранить на ftp</button>
 
-</body>
+    <h1>Оставьте отзыв о покемоне</h1>
+    
+    <div class="container">
+      <div class="cta-form">
+        <h2>Заполните поля!</h2> 
+      </div>
+      <form>
+        {% csrf_token %}
+        {{form}}
+        <div class="rating-area">
+          <input type="radio" id="star-5" name="rating" value="5">
+          <label for="star-5" title="Оценка «5»"></label>	
+          <input type="radio" id="star-4" name="rating" value="4">
+          <label for="star-4" title="Оценка «4»"></label>    
+          <input type="radio" id="star-3" name="rating" value="3">
+          <label for="star-3" title="Оценка «3»"></label>  
+          <input type="radio" id="star-2" name="rating" value="2">
+          <label for="star-2" title="Оценка «2»"></label>    
+          <input type="radio" id="star-1" name="rating" value="1">
+          <label for="star-1" title="Оценка «1»"></label>
+        </div>
+        <label for="email" class="form__label">Введите ваш email</label>
+        <input type="email" placeholder="Email" class="form__input" id="email" name="_email" />
+        <br>
+        <br>
+        <label for="subject" class="form__label">Ваш комментарий</label> <br>
+        <textarea rows="5" cols="80" id="TITLE" name="_feedback" > </textarea>  <br>     
+        <button type="submit" onclick="window.location.href = '';" >  Оставить отзыв </button>
+      </form>
+    </div>
+
+    <div>
+      <table border="1" cellpadding = "5" cellspacing="5"> 
+        <td> Email </td>
+        <td> Комментарий </td>
+        <td> Рейтинг </td>
+
+        {%for pok in response.data %}
+          <tr>
+            <td>{{pok.email}}</td>
+            <td>{{pok.comment}}</td>
+            <td>{{pok.rating}}</td>
+
+          <tr>
+        {%endfor%}
+        </table>
+    </div>
 </html>

@@ -5,12 +5,61 @@ import requests
 from rest_framework import generics
 from .forms import SearchPokemons
 import random 
-from .models import fightRezult
-from firststep.settings import RECIPIENTS_EMAIL, DEFAULT_FROM_EMAIL
+from .models import fightRezult, pokemonfeedback
 from django.core.mail import send_mail
+from ftplib import FTP
+from datetime import date
 # def dataFromApi(request):
 #         response = requests.get('https://pokeapi.co/api/v2/pokemon?limit=100000&offset=0').json()
 #         return render(request,"pokemons.html", {"response":response}) 
+
+
+def loadPokemonInfoToFtp(response, slug):
+    height = response['stats'][0]['base_stat']
+    hp = response['stats'][1]['base_stat']
+    attack = response['stats'][2]['base_stat']
+    defence = response['stats'][3]['base_stat']
+    speed = response['stats'][4]['base_stat']
+    picture = response['stats'][5]['base_stat']
+    _markdown = """\
+            # {name}
+            - height: {height}
+            - hp: {hp}
+            - attack: {attack}
+            - defence: {defence}
+            - speed: {speed}
+            - picture: {picture}
+    """
+    markdown_content = _markdown.format(
+        name=slug,
+        height=height,
+        hp=hp,
+        attack=attack,
+        defence=defence,
+        speed=speed,
+        picture=picture,
+    )
+    print(f"КонTент ---> {markdown_content}")
+  
+
+
+    Host = 'localhost'
+    User = 'Waste'
+    Password ='123'
+    with FTP(host=Host) as  ftp:
+        ftp.login(user=User, passwd=Password)
+        files_list = ftp.nlst()
+        if (not str(date.today()) in files_list):
+            ftp.mkd(f"{date.today()}")
+            print(files_list)
+        ftp.cwd(str(date.today()))
+        print(ftp.pwd())
+        file_name = f'{slug}.md'
+        with open(file_name, 'w') as f:
+                f.write(markdown_content)
+        with open(file_name, "rb+") as file:
+            ftp.storbinary(f"STOR {file_name}", file)
+        ftp.quit()
 
 class pokemonListView(View):
     def get(self, request):
@@ -41,10 +90,34 @@ class pokemonListView(View):
 class getFromNamePokemonListView(View):
     def get(self, request, slug):
         print(f"REQUEST ======== : {slug}")
+
+        rating = request.GET.get('rating')
+        feedback = request.GET.get('_feedback')
+        Email = request.GET.get('_email')
+        print(f"Рейтинг покемона --> {rating}")
+        print(f'Отзыв -> {feedback}')
+        print(f'Почта -> {Email}')
+        if(feedback and Email):
+            _f_B = pokemonfeedback(pokemon_name=slug, FIO=Email, comment=feedback, start=rating)
+            _f_B.save()
+
         pokemonName = slug
         print(f"Имя -> {pokemonName}")
         response = requests.get(f'https://pokeapi.co/api/v2/pokemon/{slug}').json()  
-        #print("DATA === ", response)
+        loadPokemonInfoToFtp(response,slug)
+        
+        data = pokemonfeedback.objects.filter(pokemon_name=slug)
+        matr = []
+        for d in data:
+            matr.append({
+                    "email":d.FIO,
+                    "comment":d.comment,
+                    "rating":d.start,
+            })
+        if (matr):
+            response['data'] = matr
+
+        
         return render(request,"pokemonsName.html", {"response":response}) 
     
 
@@ -156,13 +229,11 @@ class fastbattleView(View):
                     'final':final
         }
         print(f"Второй покемон{test['second']}")
-        subject = "wastell_play@mail.ru"
-        from_email ="wastellplays@mail.ru"
-        
         
         text = ",".join(final)
         rezult = fightRezult(rezult=text)
         rezult.save()
-        send_mail(f'{subject} от {from_email}', text,
-                          DEFAULT_FROM_EMAIL, RECIPIENTS_EMAIL)
+        send_mail(f"Это результаты боя {first_pok['name']} и {second_pok['name']}", 
+                  f"Привет, рады сообщить тебе, что {text}", 'wastell_play@mail.ru', 
+                  ['wastellplays@mail.ru'], fail_silently=False)
         return render(request,"fastbattle.html", {"response":test}) 

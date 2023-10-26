@@ -1,0 +1,11 @@
+<form>
+        {% csrf_token %}
+        {{form}}
+        <label for="email" class="form__label">Введите ваш email</label>
+        <input type="email" placeholder="Email" class="form__input" id="email" name="_email" />
+        <br>
+        <br>
+        <label for="subject" class="form__label">Ваш комментарий</label> <br>
+        <textarea rows="5" cols="80" id="TITLE" name="_feedback" > </textarea>  <br>     
+        <button type="submit" onclick="window.location.href = '';" >  Оставить отзыв </button>
+</form>

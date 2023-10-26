@@ -10,8 +10,10 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.1/ref/settings/
 """
 
+import os
 from pathlib import Path
-
+from dotenv import load_dotenv, find_dotenv
+load_dotenv(find_dotenv())
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -40,9 +42,18 @@ INSTALLED_APPS = [
     'pokemons',
     'rest_framework',
 ]
-RECIPIENTS_EMAIL = ['wastellplays@mail.ru']   # замените на свою почту
-DEFAULT_FROM_EMAIL = 'wastell_play@mail.ru'  # замените на свою почту
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+STATIC_URL = '/static/'
+
+STATICFILES_DIRS = [
+   os.path.join(BASE_DIR, "static"),
+]
+
+EMAIL_HOST = "smtp.mail.ru"
+EMAIL_PORT = 587
+EMAIL_HOST_USER = 'wastell_play@mail.ru'
+EMAIL_HOST_PASSWORD=os.getenv('password_for_mail')
+EMAIL_USE_TLS = True
+EMAIL_USE_SSL = False
 
 
 MIDDLEWARE = [
