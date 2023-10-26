@@ -226,14 +226,21 @@ class fastbattleView(View):
                     'second': 
                         (second_pokemon_response['forms']+second_pokemon_response['abilities']
                         +second_pokemon_response['stats']+[{'img':second_pokemon_response['sprites']['front_default']}]),
-                    'final':final
+                    'final':final,
+                    "EX": ""
         }
         print(f"Второй покемон{test['second']}")
-        
+        email_address = request.GET.get('email-address')
+        print(f' Введенный адресс ---> {email_address}')
         text = ",".join(final)
         rezult = fightRezult(rezult=text)
         rezult.save()
-        send_mail(f"Это результаты боя {first_pok['name']} и {second_pok['name']}", 
-                  f"Привет, рады сообщить тебе, что {text}", 'wastell_play@mail.ru', 
-                  ['wastellplays@mail.ru'], fail_silently=False)
+        try:
+            send_mail(f"Это результаты боя {first_pok['name']} и {second_pok['name']}", 
+                    f"Привет, рады сообщить тебе, что {text}", 'wastell_play@mail.ru', 
+                    [email_address], fail_silently=False)
+            email_address = ''
+        except Exception as Ex:
+            test['EX'] = Ex
+            print(Ex)
         return render(request,"fastbattle.html", {"response":test}) 
