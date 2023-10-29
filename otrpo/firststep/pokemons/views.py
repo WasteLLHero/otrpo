@@ -1,3 +1,5 @@
+import ast
+import json
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.views import View
@@ -10,29 +12,32 @@ from django.core.mail import send_mail
 from ftplib import FTP
 from datetime import date
 import redis
-# def dataFromApi(request):
-#         response = requests.get('https://pokeapi.co/api/v2/pokemon?limit=100000&offset=0').json()
-#         return render(request,"pokemons.html", {"response":response}) 
 
 class RedisPaginationListView(View):
-    def get(self,request):
+    def get(self,request, number):
         redis_cli = redis.Redis(host="localhost",port=6379,db=0)
-
         response = requests.get('https://pokeapi.co/api/v2/pokemon?limit=100000&offset=0').json()
         pages = round(len(response['results'])//100)
+        print(f"Всего страниц {pages}")
+        print(f"Вы на стр. №{number}")
+
         f_p = 1
         first = 0
-        for value in range(0,len(response['results']),100):
+        for value in range(100,len(response['results']),100):
             if(value>=len(response['results'])):
                 break
-            print(type(response['results'][first:value]))
-            redis_cli.lpush( f"page{f_p}",response['results'][first:value] )
+            print(response['results'][first:value])
+            redis_cli.set(f"page{f_p}", str(response['results'][first:value]))
             first = value
-            if(f_p+1 > pages):
+            if(f_p+1 < pages):
                 f_p+=1
-        #print(f" Первая страница - {redis_cli.hgetall(name='page1')}")
+        page_dict = ast.literal_eval(redis_cli.get(f'page{number}').decode('utf-8'))
         redis_cli.close()
-        return render(request,"RedisPagination.html", {"response":response}) 
+        print(f"Первая страница - {type(page_dict)}")
+        page_dict.append({
+            'pages': [int(x) for x in range(12)
+            ]})
+        return render(request,"RedisPagination.html", {"response":page_dict}) 
  
 
 

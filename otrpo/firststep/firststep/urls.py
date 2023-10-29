@@ -11,7 +11,7 @@ urlpatterns = [
 
 
     path('pokemons/',views.pokemonListView.as_view(), name="pokemonsList"),
-    path('Radis/',views.RedisPaginationListView.as_view(), name="RedisView"),
+    path('Redis/<int:number>',views.RedisPaginationListView.as_view(), name="RedisView"),
 
     path('pokemons/<slug:slug>',views.getFromNamePokemonListView.as_view()),
     path('pokemons/battle/<slug:slug>/<slug:name>',views.pokemonBattle.as_view(), name='pokemon_battle'),
