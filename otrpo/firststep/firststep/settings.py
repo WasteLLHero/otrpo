@@ -48,9 +48,9 @@ STATICFILES_DIRS = [
    os.path.join(BASE_DIR, "static"),
 ]
 
-EMAIL_HOST = "smtp.mail.ru"
-EMAIL_PORT = 587
-EMAIL_HOST_USER = 'wastell_play@mail.ru'
+EMAIL_HOST = os.getenv('_EMAIL_HOST')
+EMAIL_PORT = os.getenv('EMAIL_PORT')
+EMAIL_HOST_USER = os.getenv('_EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD=os.getenv('password_for_mail')
 EMAIL_USE_TLS = True
 EMAIL_USE_SSL = False

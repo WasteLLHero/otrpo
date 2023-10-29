@@ -9,9 +9,31 @@ from .models import fightRezult, pokemonfeedback
 from django.core.mail import send_mail
 from ftplib import FTP
 from datetime import date
+import redis
 # def dataFromApi(request):
 #         response = requests.get('https://pokeapi.co/api/v2/pokemon?limit=100000&offset=0').json()
 #         return render(request,"pokemons.html", {"response":response}) 
+
+class RedisPaginationListView(View):
+    def get(self,request):
+        redis_cli = redis.Redis(host="localhost",port=6379,db=0)
+
+        response = requests.get('https://pokeapi.co/api/v2/pokemon?limit=100000&offset=0').json()
+        pages = round(len(response['results'])//100)
+        f_p = 1
+        first = 0
+        for value in range(0,len(response['results']),100):
+            if(value>=len(response['results'])):
+                break
+            print(type(response['results'][first:value]))
+            redis_cli.lpush( f"page{f_p}",response['results'][first:value] )
+            first = value
+            if(f_p+1 > pages):
+                f_p+=1
+        #print(f" Первая страница - {redis_cli.hgetall(name='page1')}")
+        redis_cli.close()
+        return render(request,"RedisPagination.html", {"response":response}) 
+ 
 
 
 def loadPokemonInfoToFtp(response, slug):
@@ -20,15 +42,13 @@ def loadPokemonInfoToFtp(response, slug):
     attack = response['stats'][2]['base_stat']
     defence = response['stats'][3]['base_stat']
     speed = response['stats'][4]['base_stat']
-    picture = response['stats'][5]['base_stat']
     _markdown = """\
-            # {name}
-            - height: {height}
-            - hp: {hp}
-            - attack: {attack}
-            - defence: {defence}
-            - speed: {speed}
-            - picture: {picture}
+# {name}
+- height: {height}
+- hp: {hp}
+- attack: {attack}
+- defence: {defence}
+- speed: {speed}
     """
     markdown_content = _markdown.format(
         name=slug,
@@ -37,7 +57,6 @@ def loadPokemonInfoToFtp(response, slug):
         attack=attack,
         defence=defence,
         speed=speed,
-        picture=picture,
     )
     print(f"КонTент ---> {markdown_content}")
   
@@ -90,7 +109,9 @@ class pokemonListView(View):
 class getFromNamePokemonListView(View):
     def get(self, request, slug):
         print(f"REQUEST ======== : {slug}")
-
+        ftpload = request.GET.get('_ftp','')
+        print(f'ftp---> {ftpload}')
+        
         rating = request.GET.get('rating')
         feedback = request.GET.get('_feedback')
         Email = request.GET.get('_email')
@@ -98,14 +119,14 @@ class getFromNamePokemonListView(View):
         print(f'Отзыв -> {feedback}')
         print(f'Почта -> {Email}')
         if(feedback and Email):
-            _f_B = pokemonfeedback(pokemon_name=slug, FIO=Email, comment=feedback, start=rating)
+            _f_B = pokemonfeedback(pokemon_name=slug, email=Email, comment=feedback, star=rating)
             _f_B.save()
 
         pokemonName = slug
         print(f"Имя -> {pokemonName}")
         response = requests.get(f'https://pokeapi.co/api/v2/pokemon/{slug}').json()  
-        loadPokemonInfoToFtp(response,slug)
-        
+        if(ftpload):
+            loadPokemonInfoToFtp(response,slug)
         data = pokemonfeedback.objects.filter(pokemon_name=slug)
         matr = []
         for d in data:
@@ -121,10 +142,11 @@ class getFromNamePokemonListView(View):
         return render(request,"pokemonsName.html", {"response":response}) 
     
 
-def fight(response,opponent_response,damage_from_user, u_stat, opp_stat):
+def fight(response,opponent_response,damage_from_user, u_stat, opp_stat,slug, name):
         final = []
         damage_opponent = random.randint(1,10)
         print(f"Урон оппонента - {damage_opponent}")
+        c_round = 0
         print(f"Урон вашего покемона - {damage_from_user}")
         if (damage_from_user!=0):
             print(u_stat)
@@ -135,11 +157,13 @@ def fight(response,opponent_response,damage_from_user, u_stat, opp_stat):
                 stat_matr_opp.append(pok['base_stat'])
             if(int(damage_from_user)%2==damage_opponent%2):
                 result_ = "Вы выиграли удар!"
+                c_round+=1
                 final.append(f"Вы выиграли удар, нанесенный урон {stat_matr[1]}")
                 print("Вы выиграли удар!")
                 stat_matr_opp[0]-=stat_matr[1]
                 print(stat_matr_opp[0])
             else:
+                c_round+=1
                 result_ = "Вы проиграли удар!"
                 final.append(f"Вы проиграли удар, полученный урон {stat_matr_opp[1]}")
                 print("Вы проиграли удар!")
@@ -155,8 +179,10 @@ def fight(response,opponent_response,damage_from_user, u_stat, opp_stat):
                 o_health['base_stat'] = stat_matr_opp[pok]
             if(stat_matr[0]<=0):
                 print("Вы проиграли бой")
+                _winner = name
                 final.append("Вы проиграли бой!")
             elif(stat_matr_opp[0]<=0):
+                _winner = slug
                 final.append("Вы выиграли бой!")
                 print("Вы выиграли бой")
 
@@ -174,7 +200,9 @@ def fight(response,opponent_response,damage_from_user, u_stat, opp_stat):
             print(f"final -> {final}")
             text = final
             text = ",".join(text)
-            rezult = fightRezult(rezult=text)
+            rezult = fightRezult(rezult=text, time = date.today(), round_count = c_round, 
+                                 first_pokemon = slug, second_pokemon = name, winner = _winner
+            )
             rezult.save()
             return test
         test = {'first': 
@@ -199,7 +227,7 @@ class pokemonBattle(View):
         start = requests.get(f'https://pokeapi.co/api/v2/pokemon?limit=100000&offset=0').json()
         response = requests.get(f'https://pokeapi.co/api/v2/pokemon/{slug}').json()
         opponent_response = requests.get(f'https://pokeapi.co/api/v2/pokemon/{name}').json()
-        test = fight(response,opponent_response,damage_from_user,response['stats'],opponent_response['stats'])
+        test = fight(response,opponent_response,damage_from_user,response['stats'],opponent_response['stats'], slug, name)
         return render(request,"battle.html", {"response":test}) 
 
     
@@ -217,7 +245,9 @@ class fastbattleView(View):
         final =[]
         if(first_ch>second_ch):
             final.append(f"Покемон {first_pok['name']} выиграл бой!")
+            _winner = first_pok['name']
         else:
+            _winner = second_pok['name']
             final.append(f"Покемон {second_pok['name']} выиграл бой!")
 
         test = {'first': 
@@ -233,7 +263,9 @@ class fastbattleView(View):
         email_address = request.GET.get('email-address')
         print(f' Введенный адресс ---> {email_address}')
         text = ",".join(final)
-        rezult = fightRezult(rezult=text)
+        rezult = fightRezult(rezult=text, time = date.today(), round_count = 1, 
+                                 first_pokemon = first_pok['name'], second_pokemon = second_pok['name'], winner = _winner
+            )
         rezult.save()
         try:
             send_mail(f"Это результаты боя {first_pok['name']} и {second_pok['name']}", 

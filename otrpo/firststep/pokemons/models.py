@@ -5,10 +5,15 @@ from django.db import models
 
 class fightRezult(models.Model):
     rezult = models.TextField()
+    time = models.DateField()
+    round_count = models.IntegerField()
+    first_pokemon = models.TextField()
+    second_pokemon = models.TextField()
+    winner = models.TextField()
 
 class pokemonfeedback(models.Model):
-    FIO = models.TextField(max_length=50)
+    email = models.TextField(max_length=50)
     comment = models.TextField(max_length=200)
     pokemon_name = models.TextField()
-    start = models.IntegerField()
+    star = models.IntegerField()
 
