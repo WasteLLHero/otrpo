@@ -49,9 +49,9 @@ STATICFILES_DIRS = [
 ]
 
 EMAIL_HOST = os.getenv('_EMAIL_HOST')
-EMAIL_PORT = os.getenv('EMAIL_PORT')
+EMAIL_PORT = os.getenv('_EMAIL_PORT')
 EMAIL_HOST_USER = os.getenv('_EMAIL_HOST_USER')
-EMAIL_HOST_PASSWORD=os.getenv('password_for_mail')
+EMAIL_HOST_PASSWORD=os.getenv('_password_for_mail')
 EMAIL_USE_TLS = True
 EMAIL_USE_SSL = False
 
@@ -90,17 +90,28 @@ WSGI_APPLICATION = 'firststep.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql_psycopg2',
+#         'NAME': 'pokemons',
+#         'USER': 'postgres',
+#         'PASSWORD': '',
+#         'HOST': '127.0.0.1',
+#         'PORT': '5432'
+#     }
+# }
+
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'pokemons',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'postgres',
         'USER': 'postgres',
         'PASSWORD': '',
-        'HOST': '127.0.0.1',
-        'PORT': '5432'
+        'HOST': 'ortpo_db',
+        'PORT': 5432
+        
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators

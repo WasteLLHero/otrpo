@@ -1,0 +1,26 @@
+version: "3.11.2"
+services:
+  ortpo_db:
+    image: postgres:10.1-alpine
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    # environment:
+    #   POSTGRES_USER: postgres
+    #   POSTGRES_DB: postgres
+
+  ortpo_web:
+    #container_name: otrpo_api
+    build: 
+      context: ./
+      dockerfile: Dockerfile
+    command: bash -c "python /otrpo-1/otrpo/firststep/manage.py migrate --noinput && 
+        python /otrpo-1/otrpo/firststep/manage.py runserver 0.0.0.0:8000"
+    volumes:
+      - .:/otrpo-1/otrpo/firststep
+    ports:
+      - "8000:8000"
+    depends_on:
+      - ortpo_db
+volumes:
+  postgres_data:
+    
