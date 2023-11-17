@@ -21,6 +21,17 @@ services:
       - "8000:8000"
     depends_on:
       - ortpo_db
+  ftp:
+    build: .
+    container_name: ftp
+    command: bash -c "cd pokemons/ftp_files/;python ftp.py;"
+    volumes:
+      - .:/pokemons/ftp_files
+    depends_on:
+      - ortpo_web
+    ports:
+      - "2000:2000"
+
 volumes:
   postgres_data:
     

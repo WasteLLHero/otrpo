@@ -2,11 +2,9 @@ from pyftpdlib.authorizers import DummyAuthorizer
 from pyftpdlib.handlers import FTPHandler
 from pyftpdlib.servers import FTPServer
 from datetime import date
-import os
-import threading
 
 
-FTP_PORT = 21
+FTP_PORT = 2000
 FTP_USER = "Waste"
 FTP_PASSWORD = "123"
 FTP_DIRECTORY = "public"
@@ -17,7 +15,7 @@ handler = FTPHandler
 handler.authorizer = authorizer
 handler.banner = "pyftpdlib based ftpd ready."
 
-address = ('', FTP_PORT)
+address = ('127.0.0.2', FTP_PORT)
 server = FTPServer(address, handler)
 
 server.max_cons = 256

@@ -9,7 +9,6 @@ urlpatterns = [
     path('fastbattle/',views.fastbattleView.as_view()),
     path('',RedirectView.as_view(url='pokemons')),
 
-
     path('pokemons/',views.pokemonListView.as_view(), name="pokemonsList"),
     path('Redis/<int:number>',views.RedisPaginationListView.as_view(), name="RedisView"),
 

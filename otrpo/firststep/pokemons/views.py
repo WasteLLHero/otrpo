@@ -65,26 +65,41 @@ def loadPokemonInfoToFtp(response, slug):
     )
     print(f"КонTент ---> {markdown_content}")
   
-
-
-    Host = 'localhost'
+    Host = '127.0.0.2'
     User = 'Waste'
     Password ='123'
-    with FTP(host=Host) as  ftp:
-        ftp.login(user=User, passwd=Password)
-        files_list = ftp.nlst()
-        if (not str(date.today()) in files_list):
-            ftp.mkd(f"{date.today()}")
-            print(files_list)
-        ftp.cwd(str(date.today()))
-        print(ftp.pwd())
-        file_name = f'{slug}.md'
-        with open(file_name, 'w') as f:
-                f.write(markdown_content)
-        with open(file_name, "rb+") as file:
-            ftp.storbinary(f"STOR {file_name}", file)
-        ftp.quit()
+    # with FTP(host=Host) as  ftp:
+    #     ftp.login(user=User, passwd=Password)
+    #     files_list = ftp.nlst()
+    #     if (not str(date.today()) in files_list):
+    #         ftp.mkd(f"{date.today()}")
+    #         print(files_list)
+    #     ftp.cwd(str(date.today()))
+    #     print(ftp.pwd())
+    #     file_name = f'{slug}.md'
+    #     with open(file_name, 'w') as f:
+    #             f.write(markdown_content)
+    #     with open(file_name, "rb+") as file:
+    #         ftp.storbinary(f"STOR {file_name}", file)
+    #     ftp.quit()
 
+    ftp = FTP()
+    ftp_address = '127.0.0.2'
+    ftp.connect(ftp_address, 2000)
+
+    ftp.login(user=User, passwd=Password)
+    files_list = ftp.nlst()
+    if (not str(date.today()) in files_list):
+        ftp.mkd(f"{date.today()}")
+        print(files_list)
+    ftp.cwd(str(date.today()))
+    print(ftp.pwd())
+    file_name = f'{slug}.md'
+    with open(file_name, 'w') as f:
+        f.write(markdown_content)
+    with open(file_name, "rb+") as file:
+        ftp.storbinary(f"STOR {file_name}", file)
+    ftp.quit()
 class pokemonListView(View):
     def get(self, request):
         print(f"REQUEST11 ======== : {request}")
