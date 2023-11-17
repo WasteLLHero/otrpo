@@ -9,7 +9,7 @@
 </head>
 
 <header>
-  <input type="button" onclick="window.location.href = '/fastbattle';" value="Быстрый бой"/>
+  <input type="button" onclick="window.location.href = '/fastbattle';" value="Быстрый бой" id="fast_battle"/>
 </header>
 
 <body>
@@ -18,7 +18,7 @@
   {{form}}
   <label for="site-search">Найди покемона:</label>
   <input type="search" id="site-search" name="searchTAG" />
-  <button type="submit"> Найти! </button>
+  <button type="submit" id="btn-search"> Найти! </button>
 </form>
 
   <h1>Покемоны</h1>
@@ -28,11 +28,11 @@
   <td> Выбрать </td>
       {%for pok in response.results %}
           <tr>
-            <td><a href=battle/{{pok.name}}>{{pok.name}}</td>
+            <td><a href={{pok.name}}>{{pok.name}}</td>
             <td> <a href={{pok.name}}>{{pok.url}} </a></td>
             <td> 
               <form>
-                <input type="button" onclick="window.location.href = 'battle/{{pok.name}}/{{pok.opp}}';" value="Выбрать"/>
+                <input type="button" onclick="window.location.href = 'battle/{{pok.name}}/{{pok.opp}}';" value="Выбрать" id="battle"/>
               </form>
           </td>
           </tr>

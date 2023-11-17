@@ -151,9 +151,9 @@ class getFromNamePokemonListView(View):
         matr = []
         for d in data:
             matr.append({
-                    "email":d.FIO,
+                    "email":d.email,
                     "comment":d.comment,
-                    "rating":d.start,
+                    "rating":d.star,
             })
         if (matr):
             response['data'] = matr
@@ -294,5 +294,5 @@ class fastbattleView(View):
             email_address = ''
         except Exception as Ex:
             test['EX'] = Ex
-            print(Ex)
+            print(f"Это ошибка - > {Ex}")
         return render(request,"fastbattle.html", {"response":test}) 

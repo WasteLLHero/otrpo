@@ -69,7 +69,7 @@
         {{form}}
         <label for="subject" class="form__label">Ваша почта</label> <br>
         <textarea rows="1" cols="40" id="TITLE" name="email-address" > </textarea>  <br>     
-        <button type="submit" onclick="window.location.href = '';" >  Отправить! </button>    
+        <button type="submit" onclick="window.location.href = '';" id="submit-email">  Отправить! </button>    
     </form>
     {% if response.EX %}
         Ошибка, повторите попытку ввода почты
