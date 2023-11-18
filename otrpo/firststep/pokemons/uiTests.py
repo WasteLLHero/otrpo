@@ -2,19 +2,18 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from time import sleep
 from selenium.webdriver.chrome.options import Options
+from webdriver_manager.chrome import ChromeDriverManager
 class SeleniumInterfaceTest():
    def CreateConnection():
+      #driver = webdriver.Chrome(ChromeDriverManager().install())
       options = webdriver.ChromeOptions()
       options.add_experimental_option("excludeSwitches", ["enable-logging"])
       options.add_experimental_option("detach", True)
-      driver = webdriver.Chrome(options=options)
+      driver = webdriver.Chrome(options=options, executable_path=r'C:/chromedriver.exe')
       return driver
    def CloseCinnection(self,connection):
       return connection.close()
    
-
-
-
 def fastBattleTest(driver):
    try:
       driver.get("http://127.0.0.1:8000/")
@@ -62,5 +61,5 @@ from selenium.webdriver.chrome.options import Options
 driver = SeleniumInterfaceTest.CreateConnection()
 #fastBattleTest(driver)
 #search_and_commentsTest(driver)
-battleTest(driver)
+#battleTest(driver)
 driver.close()
