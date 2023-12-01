@@ -5,14 +5,16 @@ from django.shortcuts import render
 from django.views import View
 import requests
 from rest_framework import generics
-from .forms import SearchPokemons
+from .forms import CustomUserCreationForm, SearchPokemons
 import random 
 from .models import fightRezult, pokemonfeedback
 from django.core.mail import send_mail
 from ftplib import FTP
 from datetime import date
 import redis
-
+from django.urls import reverse_lazy
+from django.contrib.auth.forms import UserCreationForm
+from django.views import generic
 class RedisPaginationListView(View):
     def get(self,request, number):
         redis_cli = redis.Redis(host="localhost",port=6379,db=0)
@@ -297,3 +299,10 @@ class fastbattleView(View):
             test['EX'] = Ex
             # print(f"Это ошибка - > {Ex}")
         return render(request,"fastbattle.html", {"response":test}) 
+    
+
+
+class SignUpView(generic.CreateView):
+    form_class = CustomUserCreationForm
+    success_url = reverse_lazy('login')
+    template_name = 'registration/registration.html'

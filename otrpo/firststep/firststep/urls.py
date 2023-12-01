@@ -12,6 +12,10 @@ urlpatterns = [
     path('pokemons/',views.pokemonListView.as_view(), name="pokemonsList"),
     path('Redis/<int:number>',views.RedisPaginationListView.as_view(), name="RedisView"),
 
+    path('accounts/',include('django.contrib.auth.urls'), name="acc"),
+    path('accounts/registration', views.SignUpView.as_view()),
+
+
     path('pokemons/<slug:slug>',views.getFromNamePokemonListView.as_view()),
     path('pokemons/battle/<slug:slug>/<slug:name>',views.pokemonBattle.as_view(), name='pokemon_battle'),
 ]
