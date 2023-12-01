@@ -17,7 +17,6 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
-
 # Application definition
 
 INSTALLED_APPS = [
@@ -29,6 +28,10 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'pokemons',
     'rest_framework',
+    'oauth2_provider',
+    'social_django',
+    'rest_framework_social_oauth2',
+    
 ]
 STATIC_URL = '/static/'
 
@@ -67,6 +70,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'social_django.context_processors.backends',
             ],
         },
     },
@@ -144,8 +148,26 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 PASSWORD_HASHERS = [
+    'django.contrib.auth.hashers.PBKDF2SHA1PasswordHasher',
     'django.contrib.auth.hashers.Argon2PasswordHasher',
     'django.contrib.auth.hashers.PBKDF2PasswordHasher',
-    'django.contrib.auth.hashers.PBKDF2SHA1PasswordHasher',
     'django.contrib.auth.hashers.BCryptSHA256PasswordHasher',
 ]
+SOCIAL_AUTH_VK_OAUTH2_KEY = '51805645'
+SOCIAL_AUTH_VK_OAUTH2_SECRET = 'mB79EwiAYQH4CFRQegy6'
+AUTHENTICATION_BACKENDS = (
+    'social_auth.backends.contrib.vkontakte.VKontakteOAuth2Backend',
+    'social_auth.backends.facebook.FacebookBackend',
+    'social_auth.backends.google.GoogleOAuth2Backend',
+    'social_auth.backends.twitter.TwitterBackend',
+    'social_auth.backends.contrib.yandex.YandexOAuth2Backend',
+    'social_auth.backends.contrib.mailru.MailruBackend',
+    'social_auth.backends.contrib.odnoklassniki.OdnoklassnikiBackend',
+    'django.contrib.auth.backends.ModelBackend',
+)
+TEMPLATE_CONTEXT_PROCESSORS = (
+    'django.contrib.auth.context_processors.auth',
+    'django.core.context_processors.request',
+    'social_auth.context_processors.social_auth_by_name_backends',
+)
+

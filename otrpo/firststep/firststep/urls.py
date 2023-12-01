@@ -17,6 +17,7 @@ urlpatterns = [
         views.activate, name='activate'),
     path('accounts/',include('django.contrib.auth.urls'), name="acc"),
     path('accounts/registration', views.SignUpView.as_view()),
+    path(r'', include('social_django.urls')),
 
 
     path('pokemons/<slug:slug>',views.getFromNamePokemonListView.as_view()),
