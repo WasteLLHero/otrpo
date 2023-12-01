@@ -5,7 +5,7 @@ from django.shortcuts import render
 from django.views import View
 import requests
 from rest_framework import generics
-from .forms import CustomUserCreationForm, SearchPokemons
+from .forms import  CustomUserCreationForm, SearchPokemons
 import random 
 from .models import fightRezult, pokemonfeedback
 from django.core.mail import send_mail
@@ -261,6 +261,7 @@ class fastbattleView(View):
         first_pok = random.choice(rez)
         second_pok = random.choice(rez)
         # print(f"Первый покемон - {first_pok}")
+        print(f"Это вывод пользователяь во время быстрого боя покемонов {request.user}")
         first_pokemon_response = requests.get(f'https://pokeapi.co/api/v2/pokemon/{first_pok["name"]}').json()
         second_pokemon_response = requests.get(f'https://pokeapi.co/api/v2/pokemon/{second_pok["name"]}').json()
         first_ch = random.randint(1,10)
@@ -287,9 +288,12 @@ class fastbattleView(View):
         # print(f' Введенный адресс ---> {email_address}')
         text = ",".join(final)
         rezult = fightRezult(rezult=text, time = date.today(), round_count = 1, 
-                                 first_pokemon = first_pok['name'], second_pokemon = second_pok['name'], winner = _winner
+                                 first_pokemon = first_pok['name'], 
+                                 second_pokemon = second_pok['name'], 
+                                 winner = _winner,
             )
         rezult.save()
+        rezult.user_id.add(request.user)
         try:
             send_mail(f"Это результаты боя {first_pok['name']} и {second_pok['name']}", 
                     f"Привет, рады сообщить тебе, что {text}", 'wastell_play@mail.ru', 
@@ -306,3 +310,73 @@ class SignUpView(generic.CreateView):
     form_class = CustomUserCreationForm
     success_url = reverse_lazy('login')
     template_name = 'registration/registration.html'
+
+from django.shortcuts import render, redirect
+from django.http import HttpResponse
+from django.contrib.auth import login, authenticate
+from django.contrib.sites.shortcuts import get_current_site
+from django.utils.encoding import force_bytes, force_str
+from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
+from django.template.loader import render_to_string
+from django.contrib.auth.models import User
+from django.core.mail import EmailMessage
+from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+
+# custom import
+from .forms import SignupForm
+from pokemons.token import account_activation_token
+
+def signup(request):
+    if request.method == 'POST':
+        form = SignupForm(request.POST)
+        if form.is_valid():
+            user = form.save(commit=False)
+            user.is_active = False
+            user.save()
+            current_site = get_current_site(request)
+            mail_subject = 'wastell_play@mail.ru'
+            message = render_to_string(
+                'user/account_activate_email.html', {
+                    'user': user,
+                    'domain': current_site.domain,
+                    'uid': urlsafe_base64_encode(force_bytes(user.pk)),
+                    'token': account_activation_token.make_token(user),
+                }
+            )
+            to_email = form.cleaned_data.get('email')
+            try:
+                cheack_user = User.objects.get(email=to_email)
+                print(cheack_user)
+            except:
+                return HttpResponse('Ошибка, такая почта уже использвуется')
+            send_mail(subject='Привет, подтверди почту',
+                      message=message, from_email='wastell_play@mail.ru', 
+                    recipient_list= [to_email], fail_silently=False)
+
+
+            return HttpResponse('Please check your email inbox to complete your registration')
+    else:
+        form = SignupForm()
+    return render(request, 'user/register/signup.html', {'form': form})
+
+
+def activate(request, uidb64, token):
+    try:
+        uid = force_bytes(urlsafe_base64_decode(uidb64))
+        user = User.objects.get(pk=uid)
+    except(TypeError, ValueError, OverflowError, User.DoesNotExist):
+        user = None
+    if user is not None and account_activation_token.check_token(user, token):
+        user.is_active = True
+        user.save()
+        login(request, user)
+        messages.success(request, 'Your account has been activated successfully!')
+        return redirect('dashboard')
+    else:
+        return HttpResponse('Activation link is invalid!')
+
+
+@login_required()
+def dashboard(request):
+    return render(request, 'user/layouts/dashboard.html')

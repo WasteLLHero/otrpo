@@ -1,5 +1,5 @@
 from django.db import models
-
+from django.contrib.auth.models import User
 # Create your models here.
 
 
@@ -9,6 +9,7 @@ class fightRezult(models.Model):
     round_count = models.IntegerField()
     first_pokemon = models.TextField()
     second_pokemon = models.TextField()
+    user_id = models.ManyToManyField(User, null=True)
     winner = models.TextField()
 
 class pokemonfeedback(models.Model):
