@@ -28,7 +28,6 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'pokemons',
     'rest_framework',
-    'oauth2_provider',
     'social_django',
     'rest_framework_social_oauth2',
     
@@ -55,6 +54,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'oauth2_provider.middleware.OAuth2TokenMiddleware',
 ]
 
 ROOT_URLCONF = 'firststep.urls'
@@ -153,21 +153,20 @@ PASSWORD_HASHERS = [
     'django.contrib.auth.hashers.PBKDF2PasswordHasher',
     'django.contrib.auth.hashers.BCryptSHA256PasswordHasher',
 ]
-SOCIAL_AUTH_VK_OAUTH2_KEY = '51805645'
-SOCIAL_AUTH_VK_OAUTH2_SECRET = 'mB79EwiAYQH4CFRQegy6'
+SOCIAL_AUTH_GITHUB_KEY = 'd3eccb052ae3ca02916d'
+SOCIAL_AUTH_GITHUB_SECRET = 'd66becc36de7d7a490b627663af169a20777ebf3'
 AUTHENTICATION_BACKENDS = (
-    'social_auth.backends.contrib.vkontakte.VKontakteOAuth2Backend',
-    'social_auth.backends.facebook.FacebookBackend',
-    'social_auth.backends.google.GoogleOAuth2Backend',
-    'social_auth.backends.twitter.TwitterBackend',
-    'social_auth.backends.contrib.yandex.YandexOAuth2Backend',
-    'social_auth.backends.contrib.mailru.MailruBackend',
-    'social_auth.backends.contrib.odnoklassniki.OdnoklassnikiBackend',
+    'social_core.backends.github.GithubOAuth2',
     'django.contrib.auth.backends.ModelBackend',
 )
 TEMPLATE_CONTEXT_PROCESSORS = (
     'django.contrib.auth.context_processors.auth',
     'django.core.context_processors.request',
-    'social_auth.context_processors.social_auth_by_name_backends',
+    'social_core.context_processors.social_auth_by_name_backends',
 )
 
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+         'oauth2_provider.contrib.rest_framework.OAuth2Authentication', # OAuth2Authentication backend for the API
+     ),
+}
