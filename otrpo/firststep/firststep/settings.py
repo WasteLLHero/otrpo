@@ -153,8 +153,8 @@ PASSWORD_HASHERS = [
     'django.contrib.auth.hashers.PBKDF2PasswordHasher',
     'django.contrib.auth.hashers.BCryptSHA256PasswordHasher',
 ]
-SOCIAL_AUTH_GITHUB_KEY = 'd3eccb052ae3ca02916d'
-SOCIAL_AUTH_GITHUB_SECRET = 'd66becc36de7d7a490b627663af169a20777ebf3'
+SOCIAL_AUTH_GITHUB_KEY = os.getenv('_SOCIAL_AUTH_GITHUB_KEY')
+SOCIAL_AUTH_GITHUB_SECRET = os.getenv('_SOCIAL_AUTH_GITHUB_SECRET')
 AUTHENTICATION_BACKENDS = (
     'social_core.backends.github.GithubOAuth2',
     'django.contrib.auth.backends.ModelBackend',
