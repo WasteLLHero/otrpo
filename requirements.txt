@@ -158,7 +158,6 @@ responses==0.18.0
 rich==13.7.0
 rsa==4.9
 ru-core-news-sm @ https://github.com/explosion/spacy-models/releases/download/ru_core_news_sm-3.7.0/ru_core_news_sm-3.7.0-py3-none-any.whl#sha256=4b1c291c9b8991b708dadbf1b59f0fdaf7e70ca25e94df7fd3d523c4d5049754
-scipy==1.10.1
 selenium==4.15.2
 six==1.16.0
 slovnet==0.6.0
