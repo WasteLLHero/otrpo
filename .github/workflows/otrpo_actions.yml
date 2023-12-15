@@ -32,7 +32,10 @@ jobs:
         pip install psycopg2
         pip install -r requirements.txt
     - uses: harmon758/postgresql-action@v1
-    - name: Coverage report
+      with:
+        postgresql version: '15' 
+      
+    - name: Django Testing
       working-directory: ./otrpo/firststep/
       run: |
         python manage.py test
