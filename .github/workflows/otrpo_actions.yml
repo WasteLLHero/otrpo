@@ -24,7 +24,6 @@ jobs:
       with:
         python-version: 3.11.2
     - name: psycopg2 prerequisites
-      working-directory: ./otrpo/firststep/
       run: sudo apt-get install libpq-dev
     - name: Install dependencies
       working-directory: ./otrpo/firststep/
