@@ -43,22 +43,22 @@ class CustomUserCreationForm(UserCreationForm):
     def save(self, commit = True): 
         random_code = random.randint(100000,1000000)
         new_user_email = self.cleaned_data["email"]
-        # user = User.objects.create_user( 
-        #             self.cleaned_data['username'], 
-        #             self.cleaned_data['email'], 
-        #             self.cleaned_data['password1'] 
-        #         ) 
-        # return user 
-        if User.objects.filter(email=new_user_email).exists():
-            raise forms.ValidationError("Email is not unique")
-        else:
-            
-            user = User.objects.create_user( 
+        user = User.objects.create_user( 
                     self.cleaned_data['username'], 
                     self.cleaned_data['email'], 
                     self.cleaned_data['password1'] 
                 ) 
-            return user 
+        return user 
+        # if User.objects.filter(email=new_user_email).exists():
+        #     raise forms.ValidationError("Email is not unique")
+        # else:
+            
+        #     user = User.objects.create_user( 
+        #             self.cleaned_data['username'], 
+        #             self.cleaned_data['email'], 
+        #             self.cleaned_data['password1'] 
+        #         ) 
+        #     return user 
 
 
 class SignupForm(UserCreationForm):
