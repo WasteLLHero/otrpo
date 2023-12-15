@@ -31,9 +31,7 @@ jobs:
     - name: Coverage report
       working-directory: ./otrpo/firststep/
       run: |
-        pip install coverage
-        coverage run manage.py test
-        coverage report
+        run manage.py test
     - name: Django Testing
       working-directory: ./otrpo/firststep/
       run: |
