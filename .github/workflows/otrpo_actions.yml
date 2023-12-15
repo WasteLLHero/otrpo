@@ -9,7 +9,7 @@ jobs:
       - run: pip install -r requirements.txt # install all our dependencies for the project
       - run: cd otrpo
       - run: cd otrpo
-      - run: cd pokemons
+      - run: cd firststep
       - run:  python manage.py migrate
       - run:  python manage.py makemigrations
       - run:  python manage.py test
