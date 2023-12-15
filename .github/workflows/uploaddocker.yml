@@ -27,12 +27,11 @@ jobs:
         id: meta
         uses: docker/metadata-action@v3
         with:
-          images: wastellhero/otrpo
-          uses: docker/build-push-action@v2
+          images: itsmetommy/hello-github-actions
       - name: Build and push
         with:
-            context: .
-            file: ./otrpo/firststep/Dockerfile
-            push: true
-            tags: ${{ steps.meta.outputs.tags }}
-            labels: ${{ steps.meta.outputs.labels }}
+          context: .
+          file: ./otrpo/firststep/Dockerfile
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
