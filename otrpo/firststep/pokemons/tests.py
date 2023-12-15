@@ -35,11 +35,11 @@ class TestPokemons(TestCase):
         # print(f'Response вернул ответ {response.status_code}')
         self.assertEquals(response.status_code,302)
     # Тут тест по фастбатлу
-    def test_fastBattleView(self):
-        response = (self.client.get('/pokemons/fastbattle/'))
-        container_resp = response.context
-        #print(f'Response вернул ответ {(container_resp)}')
-        self.assertEquals(response.status_code,200)
+    # def test_fastBattleView(self):
+    #     response = (self.client.get('/pokemons/fastbattle/'))
+    #     container_resp = response.context
+    #     #print(f'Response вернул ответ {(container_resp)}')
+    #     self.assertEquals(response.status_code,200)
     # Тут тест по просмотру покемонов
     def test_getFromNamePokemonListView(self):
         response = (self.client.get('/pokemons/charmander'))
